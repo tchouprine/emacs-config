@@ -53,18 +53,14 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 (setq auth-sources '("~/.authinfo"))
-(after! forge 
-  (add-to-list 'forge-alist 
-  '("git.alteryx.com" "git.alteryx.com/api/v4" 
-    "git.alteryx.com" forge-gitlab-repository))
-)
+
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (setq prettier-js-args '(
   "--trailing-comma" "none"
   "--single-quote" "true"
   "--jsx-single-quote" "true"
   "--arrow-parens" "avoid"
-  "--print-width" "120"))
+  "--print-width" "80"))
 
 
 (add-hook 'js-mode-hook 'prettier-js-mode)
