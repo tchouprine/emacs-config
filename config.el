@@ -6,6 +6,7 @@
 
 (map! "s-."  #'tide-jump-to-definition)
 (map! "s->"  #'tide-jump-back)
+(map! "s-t" #'vterm)
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Alex Chuprin"
@@ -21,12 +22,12 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "monospace" :size 14))
+(setq doom-font (font-spec :family "Fira Code Retina":size 14))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-gruvbox)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -53,20 +54,22 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 (setq auth-sources '("~/.authinfo"))
-(after! forge 
-  (add-to-list 'forge-alist 
-  '("git.alteryx.com" "git.alteryx.com/api/v4" 
-    "git.alteryx.com" forge-gitlab-repository))
-)
+
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (setq prettier-js-args '(
   "--trailing-comma" "none"
   "--single-quote" "true"
   "--jsx-single-quote" "true"
   "--arrow-parens" "avoid"
-  "--print-width" "120"))
+  "--print-width" "80"))
 
 
 (add-hook 'js-mode-hook 'prettier-js-mode)
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
 
+(setq doom-modeline-icon (display-graphic-p))
+(defun init-scheme ()
+  (map! "M-r" #'scheme-send-region)
+  )
+
+(add-hook 'scheme-mode-hook #'init-scheme)
