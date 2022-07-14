@@ -74,11 +74,11 @@
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
 ;; SYNC GMAIL WITH ORG
 (require 'org-gcal)
-(setq org-gcal-client-id "735889577127-ebobr6a5cl3ak1i9g3ote0kl6ma5g9tc.apps.googleusercontent.com"
-      org-gcal-client-secret "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"
-      org-gcal-recurring-events-mode 'nested
-      org-gcal-fetch-file-alist '(("alexandret@jam.gg" .  "~/org/schedule.org")
-                                 ))
+;; (setq org-gcal-client-id "735889577127-ebobr6a5cl3ak1i9g3ote0kl6ma5g9tc.apps.googleusercontent.com"
+;;       INSERT secret from
+;;       org-gcal-recurring-events-mode 'nested
+;;       org-gcal-fetch-file-alist '(("alexandret@jam.gg" .  "~/org/schedule.org")
+;;                                  ))
 
 (map! :leader
       :desc "new todo for project"
