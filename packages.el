@@ -1,5 +1,4 @@
-;; -*-
-;; no-byte-compile: t; -*-
+;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 
 ;; To install a package with Doom you must declare them here and run 'doom sync'
@@ -12,7 +11,7 @@
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
-;; https://github.com/raxod502/straight.el#the-recipe-format
+;; https://github.com/radian-software/straight.el#the-recipe-format
 ;(package! another-package
 ;  :recipe (:host github :repo "username/repo"))
 
@@ -35,7 +34,7 @@
 
 ;; Specify a `:branch' to install a package from a particular branch or tag.
 ;; This is required for some packages whose default branch isn't 'master' (which
-;; our package manager can't deal with; see raxod502/straight.el#279)
+;; our package manager can't deal with; see radian-software/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
 ;; Use `:pin' to specify a particular commit to install.
@@ -50,25 +49,12 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 (package! prettier-js)
-(use-package fira-code-mode
-  :custom (fira-code-mode-disabled-ligatures '("[]" "x"))  ; ligatures you don't want
-  :hook prog-mode)                                         ; mode to enable fira-code-mode in
+                                        ; mode to enable fira-code-mode in
 (package! org-projectile)
 ;; packages.el
 (package! blamer :recipe (:host github :repo "artawower/blamer.el"))
 ;; config.el
-(use-package blamer
-  :defer 20
-  :custom
-  (blamer-idle-time 0.3)
-  (blamer-min-offset 70)
-  :custom-face
-  (blamer-face ((t :foreground "#7a88cf"
-                    :background nil
-                    :height 140
-                    :italic t)))
-  :config
-  (global-blamer-mode 1))
+
 
 (after! projectile (setq projectile-project-root-files-bottom-up (remove
             ".git" projectile-project-root-files-bottom-up)))
