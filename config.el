@@ -21,6 +21,8 @@
 
 (setq doom-font (font-spec :family "Fira Code" :style "Light"  :size 18 ))
 
+(setq mac-right-command-modifier 'hyper)
+(setq mac-right-option-modifier 'meta)
 ;; Theme
 (add-to-list 'load-path "~/.emacs.d/modus-themes")
 (require 'modus-themes)
@@ -37,22 +39,56 @@
 (add-to-list 'exec-path "${sqlite3}/bin")
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+
+;; Org utils
 ;; Org
 (after! org
   (setq org-directory "~/org/")
   (setq org-agenda-files (directory-files-recursively "~/org/" "\\.org$"))
   (setq org-scheduled-past-days 0 )
+
+  (defun my-org-capture-idea ()
+    (interactive)
+    (let* ((file-path "~/org/ideas.org")
+           (org-buffer (find-file-noselect file-path))
+           (temp-buffer-name "*org-capture-idea-temp*")
+           (temp-buffer-window (get-buffer-window temp-buffer-name))
+           )
+      (with-current-buffer org-buffer
+        (let* (
+               (headings (org-element-map (org-element-parse-buffer 'headline) 'headline
+                           (lambda (headline)
+                             (if (= (org-element-property :level headline) 1)
+                                 (org-element-property :raw-value headline)
+                               nil))))
+               (selected-heading (ivy-read "Choose or create a heading: " headings :require-match nil))
+               (current-time (format-time-string "[%Y-%m-%d %H:%M]"))
+               (idea-text (read-string "Enter your idea: ")))
+          (goto-char (point-min))
+          (unless (re-search-forward (format "^\\* %s$" (regexp-quote selected-heading)) nil t)
+            (goto-char (point-max))
+            (insert (format "\n* %s\n" selected-heading)))
+          (org-end-of-subtree)
+          (insert (format "\n** %s\n%s" current-time idea-text))
+          (save-buffer)))))
+
+  (add-to-list 'org-capture-templates
+               '("i" "Idea" entry (function my-org-capture-idea)
+                 "" :empty-lines 1 :immediate-finish t :prepend nil))
+
+
   (add-to-list 'org-capture-templates
                '("c" "capturing stuff"
                  entry
                  (file+headline "~/org/captures.org" "Capturing")
                  "* CAPTURED %?"
                  ))
+
   (setq org-todo-keywords
         '(
           (sequence "TOREAD(r)" "READING(p)" "|" "FINISHED READING(d)")
           (sequence "CAPTURED(c)" "PROCESSING" "SUMMARIZING" "DISTILLING" "|" "DONE(d)")
-          (sequence "TODO(t)"  "DOING(p)" "|" "DONE(d)")
+          (sequence "TODO(t)"  "DOING(p)" "POSTPONED" "|" "DONE(d)")
           (sequence "IDEA(i)"  "THINKING(p)" "|" "DONE(d)")
           (sequence "DISCUSS(d)" "BEING DISCUSSED(p)" "|" "DISCUSSED(d)")
           (sequence "[ ](t)" "|" "[x](d)")
@@ -149,6 +185,16 @@
 ;;(file+headline "~/org/journal.org" "Solving")
 ;;"* Solving %\i  %i\n  %a \n %^{PROBLEM_NAME} \n"
 ;;))
+(defun my/format-org-timestamp ()
+  "Custom function to format a timestamp for Org mode headings."
+  (interactive)
+  (insert(format-time-string "[%Y-%m-%d %H:%M]")))
+
+(map! :leader
+      :desc "insert timestamp"
+      "d t"
+      #'my/format-org-timestamp
+      )
 
 ;; SYNC GMAIL WITH ORG
 ;;(require 'org-gcal)
@@ -157,3 +203,31 @@
 ;;      org-gcal-recurring-events-mode 'nested
 ;;      org-gcal-fetch-file-alist '(("alexandret@jam.gg" .  "~/org/schedule.org")
 ;;                                  ))
+
+(use-package! nov-xwidget
+  :demand t
+  :after nov
+  :config
+  (define-key nov-mode-map (kbd "o") 'nov-xwidget-view)
+  (add-hook 'nov-mode-hook 'nov-xwidget-inject-all-files))
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
+(after! (evil copilot)
+  ;; Define the custom function that either accepts the completion or does the default behavior
+  (defun my/copilot-tab-or-default ()
+    (interactive)
+    (if (and (bound-and-true-p copilot-mode)
+             ;; Add any other conditions to check for active copilot suggestions if necessary
+             )
+        (copilot-accept-completion)
+      (evil-insert 1))) ; Default action to insert a tab. Adjust as needed.
+
+  ;; Bind the custom function to <tab> in Evil's insert state
+  (evil-define-key 'insert 'global (kbd "<tab>") 'my/copilot-tab-or-default))
