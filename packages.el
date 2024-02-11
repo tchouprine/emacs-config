@@ -66,3 +66,10 @@
            :files ("*.el" "filters" "preprocessors")))
 (package! org-glossary
   :recipe (:host github :repo "tecosaur/org-glossary"))
+(package! nov-xwidget
+  :recipe (:host github :repo "chenyanming/nov-xwidget"))
+(package! copilot
+  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
+
+(package! keycast
+  :recipe (:host github :repo "tarsius/keycast"))
